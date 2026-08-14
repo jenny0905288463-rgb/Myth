@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>竹影未明 ——《竹藪中》真相推理遊戲</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Serif TC", serif; 
+            background: #121619; 
+            color: #e0e6ed; 
+            margin: 0; 
+            padding: 0; 
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            min-height: 100vh;
+            background: #1a2128;
+            padding: 24px 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 畫面切換控制 */
+        .screen { display: none; flex-direction: column; flex-grow: 1; }
+        .screen.active { display: flex; }
+
+        /* 1. 遊戲首頁 */
+        .home-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 10px;
+        }
+        .main-title {
+            font-size: 2.5rem;
+            letter-spacing: 6px;
+            color: #d4af37;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            font-weight: 700;
+        }
+        .sub-title {
+            font-size: 1.1rem;
+            color: #a0aec0;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+
+        /* 按鈕樣式 */
+        .btn {
+            background: linear-gradient(135deg, #2c3e50, #1a252f);
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 2px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .btn:hover {
+            background: #d4af37;
+            color: #121619;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #2d3748;
+            color: #cbd5e0;
+            border: 1px solid #4a5568;
+            margin-top: 15px;
+        }
+        .btn-secondary:hover {
+            background: #4a5568;
+            color: #ffffff;
+            box-shadow: none;
+        }
+
+        /* 2. 開場引言畫面 */
+        .intro-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px 15px;
+        }
+        .quote-box {
+            font-size: 1.25rem;
+            line-height: 2;
+            color: #e2e8f0;
+            border-left: 3px solid #d4af37;
+            border-right: 3px solid #d4af37;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 4px;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+
+        /* 3. 輸入組別畫面 */
+        .group-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .group-screen h3 {
+            font-size: 1.3rem;
+            color: #d4af37;
+            margin-bottom: 25px;
+        }
+        .group-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 280px;
+        }
+        .group-btn {
+            padding: 16px;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 4. 案件檔案內容頁面 */
+        .role-header {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .role-tag {
+            display: inline-block;
+            background: #d4af37;
+            color: #121619;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        .role-info {
+            font-size: 1rem;
+            color: #cbd5e0;
+            line-height: 1.6;
+        }
+        .task-box {
+            background: #232d37;
+            border-left: 4px solid #e53e3e;
+            padding: 16px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 25px;
+        }
+        .task-title {
+            color: #fc8181;
+            font-weight: bold;
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 1.05rem;
+        }
+        .task-list {
+            margin: 0;
+            padding-left: 20px;
+            color: #cbd5e0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .warning-text {
+            color: #feb2b2;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: #d4af37;
+            border-bottom: 1px solid #3a4a58;
+            padding-bottom: 8px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        .event-card {
+            background: #212a34;
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            border: 1px solid #2d3748;
+            line-height: 1.6;
+            font-size: 0.98rem;
+        }
+        .event-num {
+            color: #63b3ed;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        /* 5. 思考討論頁面 */
+        .discussion-card {
+            background: #232d37;
+            border: 1px solid #3a4a58;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+        .discussion-num {
+            color: #d4af37;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+        .discussion-text {
+            color: #edf2f7;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .footer-action {
+            margin-top: auto;
+            padding-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- 1. 遊戲首頁 -->
+    <div class="screen home-screen active" id="screenHome">
+        <div class="main-title">竹影未明</div>
+        <div class="sub-title">——《竹藪中》真相推理遊戲</div>
+        <button class="btn" onclick="goToScreen('screenIntro')">開始遊戲 🚀</button>
+    </div>
+
+    <!-- 2. 開場引言畫面 -->
+    <div class="screen intro-screen" id="screenIntro">
+        <div class="quote-box">
+            一個人說的是真相，<br>
+            三個人說的也可能都是真相。<br><br>
+            那麼，你相信誰？
+        </div>
+        <button class="btn" onclick="goToScreen('screenGroup')">進入遊戲 🗡️</button>
+    </div>
+
+    <!-- 3. 輸入/選擇組別畫面 -->
+    <div class="screen group-screen" id="screenGroup">
+        <h3>請選擇您的組別 (角色)</h3>
+        <div class="group-buttons">
+            <button class="btn group-btn" onclick="selectGroup('A')">
+                <span>【A組】</span>
+                <span>多襄丸</span>
+            </button>
+            <button class="btn group-btn" onclick="selectGroup('B')">
+                <span>【B組】</span>
+                <span>真砂</span>
+            </button>
+            <button class="btn group-btn" onclick="selectGroup('C')">
+                <span>【C組】</span>
+                <span>武士</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 4. 案件檔案頁面 (動態生成內容) -->
+    <div class="screen" id="screenDetail">
+        <div id="detailContent"></div>
+        <div class="footer-action">
+            <button class="btn" onclick="goToScreen('screenDiscussion')">繼續 ➔</button>
+        </div>
+    </div>
+
+    <!-- 5. 思考討論頁面 -->
+    <div class="screen" id="screenDiscussion">
+        <div class="section-title">💡 團隊思考與討論</div>
+        
+        <div class="discussion-card">
+            <div class="discussion-num">① 我的角色說了什麼？</div>
+        </div>
+        <div class="discussion-card">
+            <div class="discussion-num">② 我的角色認為事情是怎麼發生的？</div>
+        </div>
+        <div class="discussion-card">
+            <div class="discussion-num">③ 哪些地方可以證明我的角色沒有說謊？</div>
+        </div>
+        <div class="discussion-card">
+            <div class="discussion-num">④ 其他人可能會怎麼質疑我們？</div>
+        </div>
+        <div class="discussion-card">
+            <div class="discussion-num">⑤ 我們要怎麼回答？</div>
+        </div>
+
+        <div class="footer-action">
+            <button class="btn btn-secondary" onclick="goToScreen('screenDetail')">⬅️ 上一頁（回到案件經過）</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // 角色資料庫
+    const roleData = {
+        A: {
+            title: "【A組｜多襄丸】",
+            name: "多襄丸",
+            role: "強盜",
+            tasks: [
+                "向其他人說明多襄丸所描述的案件經過。",
+                "回答其他人對你們的提問。",
+                "依照你們手上的資料回覆。"
+            ],
+            events: [
+                { num: "① 遇見夫妻", text: "昨天晌午過後，你遇見一對夫妻。男人是武士金澤武弘，女人是他的妻子真砂。當風吹起真砂的面紗，你看見了她的臉。你被她吸引，因此決定把她搶過來。" },
+                { num: "② 將兩人帶進竹林", text: "你告訴武士：「後山竹林裡埋著從古墓中得到的古鏡和大刀，可以便宜賣給你」。武士相信了你的話，你們一起進入竹林，真砂則留在外面。" },
+                { num: "③ 綁住武士", text: "你帶武士深入竹林。到了杉樹附近，你突然攻擊他，將他綁在杉樹下。為了讓他無法呼喊，你還用竹葉塞住他的嘴。" },
+                { num: "④ 真砂進入竹林", text: "你告訴真砂，武士好像突然生病，要她進來看看。她進入竹林後，看見丈夫被綁在杉樹下。她突然拿出小刀攻擊你。你避開攻擊，並將她的小刀打落。" },
+                { num: "⑤ 你改變了想法", text: "就算沒有殺了武士，你也可以占有真砂。但後來真砂表示：「兩個男人之中，必須有一個人死，並且會嫁給活下來的人。」她認為自己不能讓兩個男人都活著看見她的遭遇。你因此產生了殺死武士的念頭。" },
+                { num: "⑥ 與武士決鬥", text: "即使要殺那武士，你也不願用卑鄙的手段。你解開武士身上的繩子，讓他拿刀與你決鬥。你說：「我們兩人一共交手了二十三回合，最後，我的刀刺穿了武士的胸膛。」" },
+                { num: "⑦ 真砂消失", text: "武士倒下後，你回頭尋找真砂，但是她已經不見了，你不知道她去了哪裡。" },
+                { num: "⑧ 離開竹林", text: "你拿走了大刀與弓箭，之後騎著他們的馬離開。進京城以前，你已經把大刀賣掉。最後，你在栗田口附近被捕。" }
+            ]
+        },
+        B: {
+            title: "【B組｜真砂】",
+            name: "真砂",
+            role: "武士的妻子",
+            tasks: [
+                "向其他人說明真砂所描述的案件經過。",
+                "回答其他人對你們的提問。",
+                "依照你們手上的資料回覆。"
+            ],
+            events: [
+                { num: "① 遭遇多襄丸", text: "你與丈夫一起前往若狹。後來你們遭遇強盜多襄丸。之後，你被帶進竹林。" },
+                { num: "② 看見丈夫", text: "你在竹林中看見丈夫被綁在杉樹下。多襄丸占有了你，後來他離開了。" },
+                { num: "③ 丈夫的眼神", text: "看向丈夫。他的眼神讓你感受到：冷漠、輕蔑、憎恨。你因此非常痛苦。" },
+                { num: "④ 你決定與丈夫一起死", text: "你告訴丈夫：「我已經落得這樣子，再也不能和您在一起了。」你希望自己和丈夫一起死去。" },
+                { num: "⑤ 尋找武士的武器", text: "你想尋找丈夫的大刀，但是大刀不見了，弓箭也不見了。你最後在腳邊發現一把小刀。" },
+                { num: "⑥ 你刺向丈夫", text: "你告訴丈夫：「就讓我要了您的命吧！我也會馬上跟著去的。」丈夫的嘴被竹葉塞住，無法說話。你看見他的嘴型，認為他是在表示：「殺吧！」於是你拿起小刀，刺入丈夫胸口。之後，你就昏了過去。" },
+                { num: "⑦ 醒來之後", text: "你醒來後，發現丈夫已經死亡，你解開他身上的繩子。之後你非常痛苦。" }
+            ]
+        },
+        C: {
+            title: "【C組｜武士】",
+            name: "金澤武弘",
+            role: "若狹國府的武士、真砂的丈夫",
+            tasks: [
+                "向其他人說明武士所描述的案件經過。",
+                "回答其他人對你們的提問。",
+                "依照你們手上的資料回覆。"
+            ],
+            events: [
+                { num: "① 被多襄丸帶進竹林", text: "你與妻子真砂一起旅行，後來途中遇見多襄丸，你被他的話欺騙，進入竹林。" },
+                { num: "② 被綁在杉樹下", text: "多襄丸突然攻擊你，你被綁在杉樹下，嘴裡還被塞入竹葉，因此你無法正常說話。" },
+                { num: "③ 看著多襄丸與真砂", text: "你看見多襄丸占有真砂後在安慰真砂，他甚至勸真砂跟他離開。真砂回答：「那麼，帶我到任何地方去吧！」你因此感到嫉妒與痛苦。" },
+                { num: "④ 真砂要求殺死你", text: "你聽到真砂要求多襄丸殺掉你：「請殺掉那個人，只要那個人活著，我就不能和你在一起。」多襄丸沒有立刻決定。他反而問你：「要殺掉真砂，還是饒她一命？」" },
+                { num: "⑤ 真砂逃走", text: "真砂突然逃進竹林，多襄丸也追了上去，最後兩人都離開。" },
+                { num: "⑥ 多襄丸拿走武器", text: "多襄丸拿走了大刀和弓箭，並將你身上的繩子割斷一處。" },
+                { num: "⑦ 你的死亡", text: "你看到地上的小刀並拿起，刺進自己的胸膛。" },
+                { num: "⑧ 最後的事情", text: "你死後，有人來到你的身旁。你感覺到有人拔走了你胸前的小刀。但你不知道那個人是誰。" }
+            ]
+        }
+    };
+
+    // 切換畫面邏輯
+    function goToScreen(screenId) {
+        const screens = document.querySelectorAll('.screen');
+        screens.forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    // 選擇組別後生成動態內容
+    function selectGroup(groupKey) {
+        const data = roleData[groupKey];
+        const container = document.getElementById('detailContent');
+
+        let html = `
+            <div class="section-title">${data.title}</div>
+            <div class="role-header">
+                <span class="role-tag">👤 角色資料</span>
+                <div class="role-info">
+                    <b>姓名：</b>${data.name}<br>
+                    <b>身分：</b>${data.role}
+                </div>
+            </div>
+
+            <div class="task-box">
+                <div class="task-title">📜 你的任務</div>
+                <div style="font-size: 0.95rem; color:#e2e8f0; margin-bottom:6px;">你們現在代表的是<b>${data.name}</b>。請仔細閱讀以下資料，了解其所說的案件經過。</div>
+                <div style="font-size: 0.95rem; color:#e2e8f0; margin-bottom:6px;">稍後你們需要：</div>
+                <ol class="task-list">
+                    ${data.tasks.map(t => `<li>${t}</li>`).join('')}
+                </ol>
+                <div class="warning-text">⚠️ 只能根據所提供的線索回答問題。</div>
+            </div>
+
+            <div class="section-title">📖 ${data.name} 所說的事情</div>
+        `;
+
+        data.events.forEach(ev => {
+            html += `
+                <div class="event-card">
+                    <div class="event-num">${ev.num}</div>
+                    <div>${ev.text}</div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+        goToScreen('screenDetail');
+    }
+</script>
+
+</body>
+</html>
